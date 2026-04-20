@@ -15,7 +15,7 @@ Distribution repository for local Codex skills, agent prompts, design specs, and
 ## Workflow
 
 - Authoring still happens in local runtime folders such as `~/.codex/skills/` and `~/.agents/skills/`
-- `scripts/sync-skill-repo.sh` mirrors those local skills into this repo, rebuilds the catalog, then commits and pushes if needed
+- `scripts/sync-skill-repo.sh` mirrors those local skills into this repo, rebuilds the catalog, then commits locally and publishes to GitHub if needed
 - Auto-sync only stages skill-distribution paths; unrelated repo edits are left untouched
 - The repo is the distribution surface for other clients; local runtime directories remain the editing surface until you deliberately switch to a repo-first workflow
 
@@ -30,3 +30,4 @@ Distribution repository for local Codex skills, agent prompts, design specs, and
 - Local repo-only changes can be committed by `scripts/git-autosync.sh`
 - Remote sync is handled by `scripts/git-autosync-remote.sh`
 - End-to-end skill mirroring plus git sync runs via `scripts/sync-skill-repo.sh`
+- GitHub publishing for mirrored skills is performed by `scripts/publish-scoped-head.py`

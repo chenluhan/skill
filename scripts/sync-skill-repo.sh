@@ -46,35 +46,29 @@ timestamp="$(date '+%Y-%m-%d %H:%M:%S %z')"
 commit_message="chore: auto sync ${timestamp}"
 git commit -m "$commit_message" >/dev/null
 
-current_branch="$(git branch --show-current)"
-upstream_ref="$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)"
+commit_hash="$(git rev-parse --short HEAD)"
+echo "Created commit: ${commit_hash}"
+git show --stat --oneline --format=short HEAD
 
-if [[ -z "$current_branch" || -z "$upstream_ref" ]]; then
-  echo "Skipped: branch or upstream is not configured."
-  exit 0
-fi
-
-push_output=""
-if push_output="$(git push origin "$current_branch" 2>&1)"; then
-  commit_hash="$(git rev-parse --short HEAD)"
-  echo "Created commit: ${commit_hash}"
-  git show --stat --oneline --format=short HEAD
+publish_output=""
+if publish_output="$("$repo_root/scripts/publish-scoped-head.py" 2>&1)"; then
+  echo "Published remote commit: ${publish_output}"
   echo "Remote sync completed."
   exit 0
 fi
 
-if echo "$push_output" | grep -Eq "Could not resolve host|Name or service not known|Temporary failure in name resolution|Failed to connect|Connection timed out|Network is unreachable"; then
-  echo "Blocked: network/DNS prevents pushing to origin."
-  echo "$push_output"
+if echo "$publish_output" | grep -Eq "Could not resolve host|Name or service not known|Temporary failure in name resolution|Failed to connect|Connection timed out|Network is unreachable"; then
+  echo "Blocked: network/DNS prevents publishing to origin."
+  echo "$publish_output"
   exit 0
 fi
 
-if echo "$push_output" | grep -Eq "Authentication failed|could not read Username|Permission denied|HTTP Basic: Access denied|fatal: Authentication"; then
-  echo "Blocked: origin push requires GitHub credentials."
-  echo "$push_output"
+if echo "$publish_output" | grep -Eq "HTTP 401|HTTP 403|Authentication failed|could not read Username|Permission denied|HTTP Basic: Access denied|fatal: Authentication"; then
+  echo "Blocked: origin publish requires GitHub credentials."
+  echo "$publish_output"
   exit 0
 fi
 
-echo "Failed: origin push did not succeed."
-echo "$push_output"
+echo "Failed: origin publish did not succeed."
+echo "$publish_output"
 exit 1
