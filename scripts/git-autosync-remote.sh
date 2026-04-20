@@ -1,8 +1,9 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 set -euo pipefail
 
-repo_root="${0:A:h:h}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
 cd "$repo_root"
 
 git rev-parse --is-inside-work-tree >/dev/null
@@ -24,9 +25,24 @@ if [[ "$ahead_count" == "0" ]]; then
   exit 0
 fi
 
-if git push origin "$current_branch"; then
+push_output=""
+if push_output="$(git push origin "$current_branch" 2>&1)"; then
   echo "Remote sync completed."
-else
-  echo "Failed: remote sync requires valid GitHub credentials for origin."
-  exit 1
+  exit 0
 fi
+
+if echo "$push_output" | grep -Eq "Could not resolve host|Name or service not known|Temporary failure in name resolution|Failed to connect|Connection timed out|Network is unreachable"; then
+  echo "Blocked: network/DNS prevents pushing to origin."
+  echo "$push_output"
+  exit 0
+fi
+
+if echo "$push_output" | grep -Eq "Authentication failed|could not read Username|Permission denied|HTTP Basic: Access denied|fatal: Authentication"; then
+  echo "Blocked: origin push requires GitHub credentials."
+  echo "$push_output"
+  exit 0
+fi
+
+echo "Failed: origin push did not succeed."
+echo "$push_output"
+exit 1

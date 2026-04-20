@@ -1,8 +1,9 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 
 set -euo pipefail
 
-repo_root="${0:A:h:h}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "$script_dir/.." && pwd)"
 cd "$repo_root"
 
 git rev-parse --is-inside-work-tree >/dev/null
