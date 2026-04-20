@@ -170,6 +170,35 @@ def normalize_vehicle_profile(value: Any) -> dict[str, Any] | None:
     return profile
 
 
+def normalize_pet_profile(value: Any) -> dict[str, Any] | None:
+    if value in (None, "", {}):
+        return None
+    if isinstance(value, str):
+        return {
+            "type": value.strip().lower(),
+            "count": 1,
+        }
+    if not isinstance(value, dict):
+        raise TravelPlannerError("pet_profile must be an object")
+
+    profile: dict[str, Any] = {}
+    if value.get("type"):
+        profile["type"] = str(value["type"]).strip().lower()
+    if value.get("size"):
+        profile["size"] = str(value["size"]).strip().lower()
+    if value.get("count") not in (None, ""):
+        profile["count"] = int(value["count"])
+        if profile["count"] <= 0:
+            raise TravelPlannerError("pet_profile.count must be positive")
+    if "needs_pet_friendly_hotel" in value:
+        profile["needs_pet_friendly_hotel"] = bool(value["needs_pet_friendly_hotel"])
+    if "needs_walking_space" in value:
+        profile["needs_walking_space"] = bool(value["needs_walking_space"])
+    if "accepts_short_carrier_stays" in value:
+        profile["accepts_short_carrier_stays"] = bool(value["accepts_short_carrier_stays"])
+    return profile or None
+
+
 def normalize_city_node(value: Any) -> dict[str, Any]:
     if isinstance(value, str):
         return {"city": value.strip()}

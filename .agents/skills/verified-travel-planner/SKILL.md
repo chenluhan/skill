@@ -1,6 +1,6 @@
 ---
 name: verified-travel-planner
-description: Verify and plan China domestic trips with live quotes, route evidence, destination recommendations, self-drive routing, and PDF export. Use when Codex needs to clarify travel requirements, decide whether the intake is sufficient for recommendations, normalize them into `trip-request.json`, recommend destination anchors from real POI data, collect real hotel/flight/ticket quotes from configured providers, verify train prices against 12306 official channels, route stops with Amap, estimate self-drive segments from Amap plus vehicle inputs, or generate a travel itinerary PDF with evidence and unverified-item warnings.
+description: Verify and plan China domestic trips with live quotes, route evidence, destination recommendations, self-drive routing, pet-friendly intake handling, and PDF export. Use when Codex needs to clarify travel requirements, decide whether the intake is sufficient for recommendations, normalize them into `trip-request.json`, recommend destination anchors from real POI data, filter out ad-like recommendation content, collect real hotel/flight/ticket quotes from configured providers, verify train prices against 12306 official channels, route stops with Amap, estimate self-drive segments from Amap plus vehicle inputs, or generate a travel itinerary PDF with evidence and unverified-item warnings.
 ---
 
 # Verified Travel Planner
@@ -13,6 +13,7 @@ Use this skill to turn a vague domestic travel request into a verified itinerary
 
 - Refuse to query prices before the required trip fields are complete.
 - If the destination recommendation intake is too thin, ask focused follow-up questions before you finalize the itinerary.
+- If the user mentions a pet, do not assume `pet-friendly` suitability without explicit pet intake and evidence.
 - Keep the accurate budget limited to `transport + hotel + attraction tickets`.
 - Exclude any quote that does not include `source_ref`, `queried_at`, and enough conditions to explain what was priced.
 - Treat train fares as dynamic until verified through `12306` official channels.
@@ -56,8 +57,16 @@ Before calling quote scripts, also check whether recommendation intake is strong
 - `intake_status`
 - `missing_preference_fields`
 - `followup_questions`
+- `pet_profile`
 
 If `intake_status = needs_followup` and the user has not explicitly accepted defaults, stop and ask the smallest set of follow-up questions needed to disambiguate the destination recommendation.
+
+When the user mentions pets, the smallest useful follow-up set is usually:
+
+- pet type
+- pet size / count
+- whether pet-friendly lodging is required
+- whether the route needs walking space / low-density stops
 
 ## Workflow
 
@@ -119,6 +128,12 @@ Use the primary bundle for the main plan. When budget mode is `hard_cap` or `sof
 
 If the user did not provide `must_see`, the itinerary should still include destination recommendations built from real POI data. Prefer route-coherent, traveler-appropriate anchors instead of repeating generic attractions.
 
+Recommendation output must include:
+
+- `evidence_tier`: `verified`, `contextual`, or `unknown`
+- a short evidence explanation
+- ad filtering: package tours, travel products, or vague marketing pages should not become primary destination anchors
+
 If `transport_preferences` contains `self_drive`, also surface:
 
 - route distance and duration
@@ -151,6 +166,7 @@ If PDF export fails, keep the markdown and HTML and report the exact blocker.
 
 - If required trip inputs are missing, stop and ask for the missing fields.
 - If recommendation intake is weak, ask for the missing preference fields before you claim the itinerary fits the user.
+- If pet-related intake is incomplete, do not claim an itinerary is pet-friendly.
 - If `flyai_openclaw` is not configured, continue only if the user accepts a partial result with missing verified quotes.
 - If `12306` returns HTML or blocks access, mark train segments `unverified`.
 - If `AMAP_WEB_SERVICE_KEY` is missing, skip route evidence and flag the itinerary as partially verified.

@@ -40,6 +40,13 @@ Required top-level fields:
   "trip_style_tags": ["scenery", "food"],
   "traveler_needs": ["infant_friendly", "low_transfer"],
   "pace_preference": "relaxed",
+  "pet_profile": {
+    "type": "dog",
+    "count": 1,
+    "size": "small",
+    "needs_pet_friendly_hotel": true,
+    "needs_walking_space": true
+  },
   "recommendation_confidence": "medium",
   "intake_status": "ready_for_recommendation",
   "missing_preference_fields": [],
@@ -67,6 +74,7 @@ Rules:
 - `traveler_needs` should capture execution constraints such as `infant_friendly`, `low_transfer`, `stroller_friendly`
 - `pace_preference` should be one of `relaxed`, `balanced`, `dense`
 - `intake_status` should be `ready_for_recommendation` or `needs_followup`
+- `pet_profile` is optional, but once the user mentions a pet it should be normalized and missing pet requirements should push the request toward `needs_followup`
 
 ## quote-records.json
 
@@ -133,6 +141,7 @@ Top-level shape:
   "candidate_clusters": [],
   "selection_rationale": [],
   "followup_questions_asked": [],
+  "recommendation_evidence_summary": {},
   "verified_budget": {},
   "unverified_items": [],
   "booking_links": [],
@@ -150,6 +159,7 @@ Required sections:
 - `candidate_clusters[]`: grouped recommendation buckets such as scenic / culture / food
 - `selection_rationale[]`: why the planner chose this route rhythm
 - `followup_questions_asked[]`: preference gaps that should have been clarified before finalizing
+- `recommendation_evidence_summary`: aggregate counts of `verified`, `contextual`, `unknown`
 - `verified_budget`: totals plus selected verified offers
 - `unverified_items[]`: missing or failed budget items
 - `booking_links[]`: selected booking targets
@@ -161,3 +171,8 @@ Required sections:
 - Normalize all money to numeric `CNY` values before summing.
 - Preserve original booking links and human-readable product names.
 - Keep `self_drive` estimates out of `verified_budget` even when they have numeric prices.
+- Every recommended POI should carry `evidence_tier` plus a short explanation of what was actually verified.
+- Recommendation tiers:
+  - `verified`: strong structured source with enough facts to support the recommendation
+  - `contextual`: real place exists, but suitability constraints are only partially supported
+  - `unknown`: not enough evidence to make a strong suitability claim
