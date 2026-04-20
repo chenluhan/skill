@@ -113,6 +113,23 @@ def render_self_drive_section(manifest: dict[str, Any]) -> str:
 """.strip()
 
 
+def render_recommendation_rows(items: list[dict[str, Any]]) -> str:
+    rows = []
+    for item in items:
+        rows.append(
+            "| {city} | {name} | {cluster} | {reason} | {source} |".format(
+                city=esc(item.get("city")),
+                name=esc(item.get("name")),
+                cluster=esc(item.get("cluster")),
+                reason=esc(item.get("reason")),
+                source=f"[link]({item['source_ref']})" if item.get("source_ref") else "-",
+            )
+        )
+    if not rows:
+        rows.append("| - | 无推荐锚点 | - | - | - |")
+    return "\n".join(rows)
+
+
 def render_markdown(
     manifest: dict[str, Any], trip_request: dict[str, Any], quotes_envelope: dict[str, Any]
 ) -> str:
@@ -147,6 +164,10 @@ def render_markdown(
 
     evidence_list = "\n".join(f"- [证据链接]({link})" for link in manifest["evidence_refs"]) or "- 无"
     self_drive_section = render_self_drive_section(manifest)
+    rationale_block = "\n".join(f"- {esc(item)}" for item in manifest.get("selection_rationale", [])) or "- 无"
+    followup_block = "\n".join(
+        f"- {esc(item)}" for item in manifest.get("followup_questions_asked", [])
+    ) or "- 无"
 
     return f"""
 <div class="hero">
@@ -184,8 +205,24 @@ def render_markdown(
 - 出行人数：`{sum(trip_request['travelers'].values())}` 人
 - 房间需求：`{trip_request['rooms']['count']}` 间
 - 交通偏好：`{', '.join(transport_label(item) for item in trip_request['transport_preferences'])}`
+- 推荐置信度：`{esc(summary.get('recommendation_confidence') or '-')}`
+- intake 状态：`{esc(summary.get('intake_status') or '-')}`
 
 {warning_block}
+
+## 推荐依据
+
+{rationale_block}
+
+### 若要进一步定制，建议补问
+
+{followup_block}
+
+## 推荐锚点
+
+| 城市 | 锚点 | 类别 | 推荐原因 | 证据 |
+| --- | --- | --- | --- | --- |
+{render_recommendation_rows(manifest.get('recommended_pois', []))}
 
 ## 每日安排
 

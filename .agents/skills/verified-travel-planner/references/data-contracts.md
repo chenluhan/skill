@@ -37,6 +37,13 @@ Required top-level fields:
   "transport_preferences": ["train", "flight", "self_drive"],
   "must_see": [],
   "constraints": [],
+  "trip_style_tags": ["scenery", "food"],
+  "traveler_needs": ["infant_friendly", "low_transfer"],
+  "pace_preference": "relaxed",
+  "recommendation_confidence": "medium",
+  "intake_status": "ready_for_recommendation",
+  "missing_preference_fields": [],
+  "followup_questions": [],
   "vehicle_profile": {
     "powertrain": "gasoline",
     "consumption_per_100km": 8.2,
@@ -56,6 +63,10 @@ Rules:
 - `transport_preferences` may include `self_drive`
 - `vehicle_profile` is optional and is only used for self-drive estimates
 - `rooms.count` must be a positive integer
+- `trip_style_tags` should capture what the traveler wants to optimize for, such as `scenery`, `food`, `culture`, `family`, `photo`
+- `traveler_needs` should capture execution constraints such as `infant_friendly`, `low_transfer`, `stroller_friendly`
+- `pace_preference` should be one of `relaxed`, `balanced`, `dense`
+- `intake_status` should be `ready_for_recommendation` or `needs_followup`
 
 ## quote-records.json
 
@@ -118,6 +129,10 @@ Top-level shape:
   "summary": {},
   "stop_order": [],
   "day_plans": [],
+  "recommended_pois": [],
+  "candidate_clusters": [],
+  "selection_rationale": [],
+  "followup_questions_asked": [],
   "verified_budget": {},
   "unverified_items": [],
   "booking_links": [],
@@ -131,6 +146,10 @@ Required sections:
 - `summary`: trip overview, traveler counts, date range, coverage status
 - `stop_order`: ordered city list
 - `day_plans[]`: one item per day
+- `recommended_pois[]`: ranked destination anchors with recommendation reasons
+- `candidate_clusters[]`: grouped recommendation buckets such as scenic / culture / food
+- `selection_rationale[]`: why the planner chose this route rhythm
+- `followup_questions_asked[]`: preference gaps that should have been clarified before finalizing
 - `verified_budget`: totals plus selected verified offers
 - `unverified_items[]`: missing or failed budget items
 - `booking_links[]`: selected booking targets

@@ -1,7 +1,7 @@
 interface:
   display_name: "Verified Travel Planner"
-  short_description: "国内游机酒门票核验、自驾路线估算、证据链预算与 PDF 行程输出"
-  default_prompt: "Use $verified-travel-planner to verify China domestic travel quotes, include self-drive routing when needed, and generate a PDF itinerary with evidence."
+  short_description: "国内游推荐补问、机酒门票核验、自驾路线估算、证据链预算与 PDF 行程输出"
+  default_prompt: "Use $verified-travel-planner to check whether the travel intake is sufficient, ask focused follow-up questions when needed, recommend destination anchors from real POI data, verify China domestic travel quotes, include self-drive routing when needed, and generate a PDF itinerary with evidence."
 
 policy:
   allow_implicit_invocation: true

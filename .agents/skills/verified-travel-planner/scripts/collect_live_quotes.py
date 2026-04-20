@@ -259,6 +259,97 @@ def geocode_city(city: str, amap_key: str) -> dict[str, Any] | None:
     }
 
 
+def recommendation_queries(stop: dict[str, Any], trip_request: dict[str, Any]) -> list[dict[str, Any]]:
+    queries: list[dict[str, Any]] = []
+    styles = set(trip_request.get("trip_style_tags") or [])
+    traveler_needs = set(trip_request.get("traveler_needs") or [])
+    explicit_targets = [str(item) for item in stop.get("must_see", []) if str(item).strip()]
+
+    def add_query(keyword: str, cluster: str, reason: str, priority: int) -> None:
+        candidate = {
+            "keyword": keyword,
+            "cluster": cluster,
+            "reason": reason,
+            "priority": priority,
+        }
+        if candidate not in queries:
+            queries.append(candidate)
+
+    for index, item in enumerate(explicit_targets):
+        add_query(item, "must_see", "用户明确点名的目的地锚点", index)
+
+    if not explicit_targets:
+        if not styles or "scenery" in styles or "relaxation" in styles:
+            add_query("古城", "scenic", "适合作为目的地慢逛锚点", 0)
+            add_query("公园", "scenic", "低门槛风景点，适合留出机动时间", 1)
+            add_query("风景区", "scenic", "补充代表性景观点", 2)
+        if "culture" in styles:
+            add_query("古城", "culture", "补充当地人文和历史氛围", 0)
+            add_query("博物馆", "culture", "补充室内文化点位", 2)
+        if "food" in styles:
+            add_query("美食街", "food", "补充适合晚上觅食的区域", 1)
+            add_query("小吃", "food", "补充本地特色小吃区域", 2)
+        if "photo" in styles:
+            add_query("观景台", "photo", "补充适合拍照出片的点位", 2)
+        if traveler_needs & {"family_friendly", "child_friendly", "infant_friendly", "stroller_friendly"}:
+            add_query("公园", "family", "优先平缓、低折腾的公共空间", 0)
+            add_query("古城", "family", "补充适合推车慢逛的街区", 1)
+
+    return queries[:6]
+
+
+def score_recommendation_candidate(
+    *,
+    poi_name: str,
+    cluster: str,
+    priority: int,
+    trip_request: dict[str, Any],
+    address: Any,
+) -> int:
+    score = 100 - priority * 10
+    if "self_drive" in trip_request.get("transport_preferences", []):
+        score += 4
+    if cluster == "food":
+        score -= 6
+    if not address:
+        score -= 3
+
+    traveler_needs = set(trip_request.get("traveler_needs") or [])
+    if traveler_needs & {"infant_friendly", "child_friendly", "senior_friendly", "stroller_friendly"}:
+        for keyword, penalty in {
+            "山": 16,
+            "索道": 20,
+            "峡谷": 18,
+            "徒步": 20,
+            "漂流": 20,
+        }.items():
+            if keyword in poi_name:
+                score -= penalty
+    return score
+
+
+def build_candidate_clusters(recommended_pois: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[str]] = defaultdict(list)
+    labels = {
+        "must_see": "明确想去",
+        "scenic": "风景",
+        "culture": "人文",
+        "family": "亲子友好",
+        "food": "觅食区域",
+        "photo": "拍照",
+    }
+    for item in recommended_pois:
+        grouped[item["cluster"]].append(item["name"])
+    return [
+        {
+            "cluster": cluster,
+            "label": labels.get(cluster, cluster),
+            "items": names,
+        }
+        for cluster, names in grouped.items()
+    ]
+
+
 def add_amap_context(envelope: dict[str, Any], trip_request: dict[str, Any]) -> None:
     amap_key = get_secret("AMAP_WEB_SERVICE_KEY")
     envelope["provider_status"]["amap_route_poi"] = {"configured": bool(amap_key)}
@@ -276,9 +367,11 @@ def add_amap_context(envelope: dict[str, Any], trip_request: dict[str, Any]) -> 
 
     envelope["provider_status"]["amap_route_poi"]["geocoded_cities"] = sorted(geo_index)
     poi_hits: list[dict[str, Any]] = []
+    recommended_candidates: list[dict[str, Any]] = []
     for stop in schedule:
-        targets = stop.get("must_see") or ["景点"]
-        for keyword in targets[:3]:
+        queries = recommendation_queries(stop, trip_request)
+        for query in queries:
+            keyword = query["keyword"]
             payload, error_message = safe_http_json(
                 "https://restapi.amap.com/v3/place/text",
                 params={
@@ -295,19 +388,41 @@ def add_amap_context(envelope: dict[str, Any], trip_request: dict[str, Any]) -> 
                     envelope["warnings"].append(f"Amap POI lookup failed for {stop['city']}/{keyword}: {error_message}")
                 continue
             for poi in payload.get("pois", [])[:2]:
-                poi_hits.append(
+                source_ref = (
+                    "https://uri.amap.com/search?keyword="
+                    + parse.quote(str(keyword))
+                    + "&city="
+                    + parse.quote(stop["city"])
+                )
+                hit = {
+                    "city": stop["city"],
+                    "keyword": keyword,
+                    "cluster": query["cluster"],
+                    "name": poi.get("name"),
+                    "address": poi.get("address"),
+                    "location": poi.get("location"),
+                    "source_ref": source_ref,
+                }
+                poi_hits.append(hit)
+                if not hit["name"]:
+                    continue
+                recommended_candidates.append(
                     {
-                        "city": stop["city"],
-                        "keyword": keyword,
-                        "name": poi.get("name"),
-                        "address": poi.get("address"),
-                        "location": poi.get("location"),
-                        "source_ref": (
-                            "https://uri.amap.com/search?keyword="
-                            + parse.quote(str(keyword))
-                            + "&city="
-                            + parse.quote(stop["city"])
+                        **hit,
+                        "reason": query["reason"],
+                        "score": score_recommendation_candidate(
+                            poi_name=str(hit["name"]),
+                            cluster=query["cluster"],
+                            priority=int(query["priority"]),
+                            trip_request=trip_request,
+                            address=hit["address"],
                         ),
+                        "route_fit": (
+                            "self_drive_friendly"
+                            if "self_drive" in trip_request.get("transport_preferences", [])
+                            else "standard"
+                        ),
+                        "traveler_fit": list(trip_request.get("traveler_needs") or []),
                     }
                 )
 
@@ -355,7 +470,25 @@ def add_amap_context(envelope: dict[str, Any], trip_request: dict[str, Any]) -> 
             }
         )
 
+    deduped_recommendations: list[dict[str, Any]] = []
+    seen_recommendation_keys: set[tuple[str, str]] = set()
+    seen_base_names: set[tuple[str, str]] = set()
+    for candidate in sorted(recommended_candidates, key=lambda item: (-int(item["score"]), item["name"])):
+        dedupe_key = (candidate["city"], candidate["name"])
+        if dedupe_key in seen_recommendation_keys:
+            continue
+        base_name = str(candidate["name"]).split("-", 1)[0].strip()
+        base_key = (candidate["city"], base_name)
+        if base_key in seen_base_names and base_name != candidate["name"]:
+            continue
+        seen_recommendation_keys.add(dedupe_key)
+        seen_base_names.add(base_key)
+        deduped_recommendations.append(candidate)
+    recommended_pois = deduped_recommendations[:6]
+
     envelope["poi_hits"] = poi_hits
+    envelope["recommended_pois"] = recommended_pois
+    envelope["candidate_clusters"] = build_candidate_clusters(recommended_pois)
     envelope["route_snapshots"] = route_snapshots
 
 

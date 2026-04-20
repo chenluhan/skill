@@ -1,17 +1,18 @@
 ---
 name: verified-travel-planner
-description: Verify and plan China domestic trips with live quotes, route evidence, self-drive routing, and PDF export. Use when Codex needs to clarify travel requirements, normalize them into `trip-request.json`, collect real hotel/flight/ticket quotes from configured providers, verify train prices against 12306 official channels, route stops with Amap, estimate self-drive segments from Amap plus vehicle inputs, or generate a travel itinerary PDF with evidence and unverified-item warnings.
+description: Verify and plan China domestic trips with live quotes, route evidence, destination recommendations, self-drive routing, and PDF export. Use when Codex needs to clarify travel requirements, decide whether the intake is sufficient for recommendations, normalize them into `trip-request.json`, recommend destination anchors from real POI data, collect real hotel/flight/ticket quotes from configured providers, verify train prices against 12306 official channels, route stops with Amap, estimate self-drive segments from Amap plus vehicle inputs, or generate a travel itinerary PDF with evidence and unverified-item warnings.
 ---
 
 # Verified Travel Planner
 
 ## Overview
 
-Use this skill to turn a vague domestic travel request into a verified itinerary package. Optimize for trustworthy budget math, not inspirational copy.
+Use this skill to turn a vague domestic travel request into a verified itinerary package. Optimize for trustworthy budget math and executable destination recommendations, not inspirational copy.
 
 ## Non-Negotiable Rules
 
 - Refuse to query prices before the required trip fields are complete.
+- If the destination recommendation intake is too thin, ask focused follow-up questions before you finalize the itinerary.
 - Keep the accurate budget limited to `transport + hotel + attraction tickets`.
 - Exclude any quote that does not include `source_ref`, `queried_at`, and enough conditions to explain what was priced.
 - Treat train fares as dynamic until verified through `12306` official channels.
@@ -47,6 +48,17 @@ Optional self-drive fields:
 
 When `vehicle_profile` is missing, still build the self-drive route but keep the cost outside the accurate budget.
 
+Before calling quote scripts, also check whether recommendation intake is strong enough. The normalized request should produce:
+
+- `trip_style_tags`
+- `traveler_needs`
+- `pace_preference`
+- `intake_status`
+- `missing_preference_fields`
+- `followup_questions`
+
+If `intake_status = needs_followup` and the user has not explicitly accepted defaults, stop and ask the smallest set of follow-up questions needed to disambiguate the destination recommendation.
+
 ## Workflow
 
 ### 1. Check the environment
@@ -70,6 +82,8 @@ python3 scripts/normalize_trip_request.py \
 ```
 
 Use [references/data-contracts.md](references/data-contracts.md) when deciding field shapes.
+
+Inspect `missing_preference_fields` and `followup_questions` after normalization. Do not barrel ahead into generic destination recommendations if the request is still too vague.
 
 ### 3. Collect live quotes
 
@@ -103,6 +117,8 @@ python3 scripts/build_itinerary.py \
 
 Use the primary bundle for the main plan. When budget mode is `hard_cap` or `soft_target`, also try to produce a cheaper alternative from the verified offers.
 
+If the user did not provide `must_see`, the itinerary should still include destination recommendations built from real POI data. Prefer route-coherent, traveler-appropriate anchors instead of repeating generic attractions.
+
 If `transport_preferences` contains `self_drive`, also surface:
 
 - route distance and duration
@@ -134,6 +150,7 @@ If PDF export fails, keep the markdown and HTML and report the exact blocker.
 ## Failure Handling
 
 - If required trip inputs are missing, stop and ask for the missing fields.
+- If recommendation intake is weak, ask for the missing preference fields before you claim the itinerary fits the user.
 - If `flyai_openclaw` is not configured, continue only if the user accepts a partial result with missing verified quotes.
 - If `12306` returns HTML or blocks access, mark train segments `unverified`.
 - If `AMAP_WEB_SERVICE_KEY` is missing, skip route evidence and flag the itinerary as partially verified.
