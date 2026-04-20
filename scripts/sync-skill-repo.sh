@@ -51,7 +51,7 @@ echo "Created commit: ${commit_hash}"
 git show --stat --oneline --format=short HEAD
 
 publish_output=""
-if publish_output="$("$repo_root/scripts/publish-scoped-head.py" 2>&1)"; then
+if publish_output="$(python3 "$repo_root/scripts/publish-scoped-head.py" 2>&1)"; then
   echo "Published remote commit: ${publish_output}"
   echo "Remote sync completed."
   exit 0
