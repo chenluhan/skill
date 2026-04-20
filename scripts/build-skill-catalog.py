@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime
 from pathlib import Path
 
 
@@ -119,8 +118,6 @@ def main() -> None:
     lines: list[str] = []
     lines.append("# Skills Index")
     lines.append("")
-    lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S %z')}".strip())
-    lines.append("")
     lines.append("## Summary")
     lines.append("")
     lines.append(f"- Total tracked skills: {len(all_skill_names)}")
@@ -154,7 +151,11 @@ def main() -> None:
             )
         lines.append("")
 
-    (repo_root / "catalog" / "skills-index.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    output_path = repo_root / "catalog" / "skills-index.md"
+    content = "\n".join(lines) + "\n"
+    if output_path.exists() and output_path.read_text(encoding="utf-8") == content:
+        return
+    output_path.write_text(content, encoding="utf-8")
 
 
 if __name__ == "__main__":
