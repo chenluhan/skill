@@ -20,4 +20,4 @@ Source repository for Codex skills, agent prompts, design specs, and local git a
 ## Git
 
 - Local changes can be auto-committed by `scripts/git-autosync.sh`
-- Remote pushes are manual
+- Remote sync is handled by `scripts/git-autosync-remote.sh`
