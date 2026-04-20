@@ -10,6 +10,7 @@ from _travel_common import (
     compute_stop_schedule,
     normalize_budget_mode,
     normalize_city_node,
+    normalize_pet_profile,
     normalize_rooms,
     normalize_transport_preferences,
     normalize_travelers,
@@ -119,6 +120,19 @@ def normalize_string_list(raw: Any) -> list[str]:
     return result
 
 
+def source_text(payload: dict[str, Any]) -> str:
+    texts = normalize_string_list(payload.get("constraints"))
+    texts.append(str(payload.get("notes") or ""))
+    texts.extend(str(item) for item in normalize_must_see(payload.get("must_see")))
+    return " ".join(texts)
+
+
+def pet_mentioned(payload: dict[str, Any]) -> bool:
+    if payload.get("pet_profile") not in (None, "", {}):
+        return True
+    return any(keyword in source_text(payload) for keyword in ("宠物", "狗", "猫", "带宠", "毛孩子", "遛狗"))
+
+
 def infer_trip_style_tags(payload: dict[str, Any]) -> tuple[list[str], str]:
     explicit = normalize_string_list(payload.get("trip_style_tags"))
     tags: list[str] = []
@@ -130,10 +144,7 @@ def infer_trip_style_tags(payload: dict[str, Any]) -> tuple[list[str], str]:
     if tags:
         source = "explicit"
 
-    texts = normalize_string_list(payload.get("constraints"))
-    texts.append(str(payload.get("notes") or ""))
-    texts.extend(str(item) for item in normalize_must_see(payload.get("must_see")))
-    joined = " ".join(texts)
+    joined = source_text(payload)
     keyword_map = {
         "scenery": ["风景", "自然", "景色", "湖", "海", "山", "看风景"],
         "food": ["美食", "小吃", "吃", "特色"],
@@ -173,7 +184,7 @@ def derive_traveler_needs(payload: dict[str, Any], travelers: dict[str, int]) ->
         for item in ("senior_friendly", "low_transfer"):
             add_need(item, "inferred")
 
-    joined = " ".join(normalize_string_list(payload.get("constraints")) + [str(payload.get("notes") or "")])
+    joined = source_text(payload)
     keyword_map = {
         "family_friendly": ["亲子", "家庭"],
         "low_transfer": ["少折腾", "少换酒店", "低折腾", "不赶"],
@@ -184,6 +195,12 @@ def derive_traveler_needs(payload: dict[str, Any], travelers: dict[str, int]) ->
     for need, keywords in keyword_map.items():
         if any(keyword in joined for keyword in keywords):
             add_need(need, "inferred")
+    if payload.get("pet_profile") not in (None, "", {}):
+        add_need("pet_friendly", "explicit")
+        if isinstance(payload.get("pet_profile"), dict) and payload["pet_profile"].get("needs_walking_space"):
+            add_need("walking_space_preferred", "explicit")
+    elif pet_mentioned(payload):
+        add_need("pet_friendly", "inferred")
     return needs, source
 
 
@@ -194,7 +211,7 @@ def normalize_pace_preference(payload: dict[str, Any]) -> tuple[str, str, str]:
         if normalized:
             return normalized, PACE_TEMPLATES[normalized], "explicit"
 
-    joined = " ".join(normalize_string_list(payload.get("constraints")) + [str(payload.get("notes") or "")])
+    joined = source_text(payload)
     inferred_keywords = {
         "relaxed": ["轻松", "休闲", "慢一点", "不赶", "不早起"],
         "dense": ["高密度", "紧凑", "多玩点", "暴走"],
@@ -210,8 +227,19 @@ def build_followup_questions(missing_fields: list[str]) -> list[str]:
         "trip_style_tags": "这趟更偏风景、美食、休闲放空、拍照打卡，还是人文古城？",
         "traveler_needs": "同行人有没有老人、小孩、婴儿，或者不想爬山、少折腾这类执行约束？",
         "pace_preference": "你希望每天节奏偏轻松、适中，还是尽量多看点？",
+        "pet_profile": "如果会带宠物，请补充宠物类型、体型/数量、是否必须住宠物友好酒店，以及是否需要遛宠空间。",
     }
     return [question_map[field] for field in missing_fields if field in question_map]
+
+
+def pet_profile_missing_fields(pet_profile: dict[str, Any] | None) -> list[str]:
+    if pet_profile is None:
+        return ["type", "size", "needs_pet_friendly_hotel", "needs_walking_space"]
+    missing = []
+    for field in ("type", "size", "needs_pet_friendly_hotel", "needs_walking_space"):
+        if field not in pet_profile:
+            missing.append(field)
+    return missing
 
 
 def assess_recommendation_state(
@@ -232,6 +260,11 @@ def assess_recommendation_state(
         missing.append("traveler_needs")
     if not normalized["must_see"] and pace_source == "default":
         missing.append("pace_preference")
+    if normalized.get("pet_profile") is not None:
+        if pet_profile_missing_fields(normalized["pet_profile"]):
+            missing.append("pet_profile")
+    elif "pet_friendly" in normalized.get("traveler_needs", []):
+        missing.append("pet_profile")
 
     if normalized["must_see"]:
         confidence = "high"
@@ -287,6 +320,7 @@ def normalize_payload(raw: dict[str, Any]) -> dict[str, Any]:
         "transport_preferences": normalize_transport_preferences(transport_preferences),
         "must_see": normalize_must_see(payload.get("must_see")),
         "constraints": payload.get("constraints") or [],
+        "pet_profile": normalize_pet_profile(payload.get("pet_profile")),
         "vehicle_profile": normalize_vehicle_profile(payload.get("vehicle_profile")),
         "currency": str(payload.get("currency") or "CNY"),
         "notes": payload.get("notes") or "",
