@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+
+# Temporary analysis and generated run artifacts
+notes/
+
+# Common local caches
+.cache/
+.tmp/
+tmp/
