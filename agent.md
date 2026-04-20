@@ -6,7 +6,8 @@
 - `git` 负责记录正式变更；自动同步只做本地 `commit`，不自动 `push`。
 
 ## 目录规则
-- `skills/<skill-name>/`：正式 skill 源码。每个 skill 至少包含 `SKILL.md`，可按需包含 `references/`、`scripts/`、`assets/`。
+- `.agents/skills/<skill-name>/`：正式 skill 源码。每个 skill 至少包含 `SKILL.md`，可按需包含 `references/`、`scripts/`、`assets/`。
+- `.claude/skills/<skill-name>`：指向 `.agents/skills/<skill-name>/` 的兼容入口；不直接编辑。
 - `agents/<agent-name>/`：后续 agent 的提示词、配置、说明与辅助资源。
 - `docs/superpowers/specs/`：设计文档与规格说明。
 - `notes/`：临时分析、运行产物、调试输出；默认不纳入版本控制，可随任务结束清理。
@@ -21,7 +22,8 @@
 ## 工作流程
 - 先定规则，再动结构；规则变化先改本文档，再改目录与脚本。
 - 新增 skill 或 agent 时，先在 `docs/superpowers/specs/` 写设计或 delta 说明，再落正式源码。
-- 正式内容只放进 `skills/`、`agents/`、`docs/`、`scripts/`；临时产物留在 `notes/`。
+- 正式 skill 只放进 `.agents/skills/`；`.claude/skills/` 只保留兼容用软链接。
+- 正式 agent 内容放进 `agents/`；设计与脚本分别放进 `docs/`、`scripts/`；临时产物留在 `notes/`。
 - 若需要让 Codex 直接使用仓库里的 skill，优先从运行目录指向仓库源码，而不是双向复制。
 
 ## Git 规则
@@ -32,4 +34,5 @@
 ## 验证规则
 - 修改 skill 后，优先运行该 skill 自带的代表性校验脚本。
 - 没有自动校验脚本时，至少检查结构是否满足 `SKILL.md` 必需约定。
+- 修改 skill 路径后，必须确认 `.claude/skills/` 兼容入口仍然有效。
 - 无法验证的项，需要在提交说明或对话里明确原因。

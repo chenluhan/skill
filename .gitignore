@@ -1,5 +1,6 @@
 .DS_Store
 *.log
+.claude/settings.local.json
 
 # Temporary analysis and generated run artifacts
 notes/
