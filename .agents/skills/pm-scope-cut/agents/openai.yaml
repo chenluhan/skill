@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Scope Cut"
+  short_description: "Cut scope into Must, Should, and Not now"
+  default_prompt: "Use $pm-scope-cut to reduce this candidate scope into Must, Should, and Not now."

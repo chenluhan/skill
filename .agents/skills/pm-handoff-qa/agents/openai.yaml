@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Handoff QA"
+  short_description: "Check Build Pack consistency before engineering handoff"
+  default_prompt: "Use $pm-handoff-qa to review this Build Pack for internal consistency before handoff."

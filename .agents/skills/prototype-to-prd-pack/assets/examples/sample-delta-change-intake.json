@@ -1,0 +1,30 @@
+{
+  "mode": "delta",
+  "input_type": "mixed",
+  "project_name": "AI Concierge Request Flow",
+  "requested_level": "L2",
+  "baseline_ref": "/absolute/path/run-001/output/ai-concierge-request-flow-prd-pack",
+  "change_sources": [
+    {
+      "id": "shot-home-v2",
+      "type": "image",
+      "path": "/absolute/path/home-v2.png",
+      "note": "Updated home screen"
+    }
+  ],
+  "change_summary": "Home page hero CTA and quick-start grouping changed.",
+  "claimed_changes": [
+    "Hero CTA wording changed",
+    "Quick-start grouping changed from 4 chips to 3 cards"
+  ],
+  "suspected_impacts": [
+    "home page spec",
+    "home-to-request flow"
+  ],
+  "missing_materials": [
+    "Updated transition mapping"
+  ],
+  "user_notes": [
+    "No change to service-progress flow is expected."
+  ]
+}

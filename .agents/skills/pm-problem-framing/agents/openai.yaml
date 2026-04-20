@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Problem Framing"
+  short_description: "Clarify users, goals, context, and non-goals"
+  default_prompt: "Use $pm-problem-framing to turn this brief into a clear Problem Framing for product work."

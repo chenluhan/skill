@@ -1,23 +1,31 @@
 # skill
 
-Source repository for Codex skills, agent prompts, design specs, and local git automation.
+Distribution repository for local Codex skills, agent prompts, design specs, and git automation.
 
 ## Structure
 
-- `.agents/skills/`: canonical skill source for cross-client compatibility
-- `.claude/skills/`: Claude Code compatibility entry points, symlinked to `.agents/skills/`
+- `.agents/skills/`: mirrored repo copy of local skills for cross-client distribution
+- `.claude/skills/`: generated Claude Code compatibility symlinks to `.agents/skills/`
+- `catalog/`: skill taxonomy and generated inventory
 - `agents/`: future agent source and prompt assets
 - `docs/superpowers/specs/`: design docs
-- `scripts/`: repo automation and maintenance scripts
+- `scripts/`: mirror, catalog, and git automation scripts
 - `notes/`: local scratch space, ignored by git
+
+## Workflow
+
+- Authoring still happens in local runtime folders such as `~/.codex/skills/` and `~/.agents/skills/`
+- `scripts/sync-skill-repo.sh` mirrors those local skills into this repo, rebuilds the catalog, then commits and pushes if needed
+- The repo is the distribution surface for other clients; local runtime directories remain the editing surface until you deliberately switch to a repo-first workflow
 
 ## Usage
 
 - If a client supports the open Agent Skills layout, read from `.agents/skills/`
 - If a client follows Claude Code project conventions, use `.claude/skills/`
-- Do not edit the symlinked `.claude/skills/` copies directly; edit the canonical files under `.agents/skills/`
+- Do not edit `.claude/skills/` directly; it is generated from `.agents/skills/`
 
 ## Git
 
-- Local changes can be auto-committed by `scripts/git-autosync.sh`
+- Local repo-only changes can be committed by `scripts/git-autosync.sh`
 - Remote sync is handled by `scripts/git-autosync-remote.sh`
+- End-to-end skill mirroring plus git sync runs via `scripts/sync-skill-repo.sh`

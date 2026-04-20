@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Delta Spec"
+  short_description: "Compress changes into an engineering-ready delta spec"
+  default_prompt: "Use $pm-delta-spec to compress this solution into a concise engineering delta spec."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Prototype to PRD Pack"
+  short_description: "Turn prototypes into PRD packs with Mermaid flows"
+  default_prompt: "Use $prototype-to-prd-pack to turn this prototype, screenshots, and notes into a PRD pack with Mermaid flows and an AI-ready spec."

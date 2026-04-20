@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Prototype Flow"
+  short_description: "Design a handoff-ready flow and interaction sketch"
+  default_prompt: "Use $pm-prototype-flow to turn this framing into a handoff-ready product flow and prototype brief."

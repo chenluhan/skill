@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Interview Screen"
+  short_description: "Generate PM screening briefs from resume"
+  default_prompt: "Use $pm-interview-screen to turn this resume into a 30-minute product-manager screening pack, with source-mapped questions and a PDF brief when needed."

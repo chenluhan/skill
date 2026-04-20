@@ -1,0 +1,5 @@
+interface:
+  display_name: "Awesome Design MD"
+  short_description: "Apply getdesign DESIGN.md styles"
+  brand_color: "#FFB1EE"
+  default_prompt: "Use $awesome-design-md to choose a site style and add its DESIGN.md to this project before UI work."

@@ -1,0 +1,160 @@
+@page {
+  margin: 18mm 16mm 18mm 16mm;
+}
+
+:root {
+  color-scheme: light;
+  --ink: #172033;
+  --muted: #5e6678;
+  --line: #d7deea;
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --accent: #1f5eff;
+  --accent-soft: #e8efff;
+  --warning: #b4570f;
+  --warning-soft: #fff4e8;
+}
+
+body {
+  font-family: "PingFang SC", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+  color: var(--ink);
+  font-size: 11pt;
+  line-height: 1.6;
+  background: #ffffff;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--ink);
+  margin: 0 0 10px 0;
+}
+
+h1 {
+  font-size: 24pt;
+  line-height: 1.2;
+}
+
+h2 {
+  margin-top: 24px;
+  font-size: 16pt;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+h3 {
+  margin-top: 18px;
+  font-size: 12pt;
+}
+
+p,
+li {
+  color: var(--ink);
+}
+
+.hero {
+  background: linear-gradient(135deg, #0f1f4a 0%, #1f5eff 55%, #7aa3ff 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.hero p,
+.hero li,
+.hero h1 {
+  color: white;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.meta-chip {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 9pt;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  min-width: 160px;
+  flex: 1 1 160px;
+}
+
+.card-label {
+  color: var(--muted);
+  font-size: 9pt;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 18pt;
+  font-weight: 700;
+}
+
+.warning-box {
+  background: var(--warning-soft);
+  border: 1px solid #ffd3a8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 16px 0;
+}
+
+.budget-table,
+.offer-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  background: var(--card);
+}
+
+.budget-table th,
+.budget-table td,
+.offer-table th,
+.offer-table td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.budget-table th,
+.offer-table th {
+  background: var(--bg);
+}
+
+.day-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  background: var(--card);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 9pt;
+}
+
+a {
+  color: var(--accent);
+}

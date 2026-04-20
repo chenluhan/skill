@@ -1,0 +1,66 @@
+{
+  "design-ui": {
+    "label": "Design & UI",
+    "skills": [
+      "awesome-design-md",
+      "figma",
+      "figma-implement-design",
+      "frontend-skill",
+      "ios-ui-polish"
+    ]
+  },
+  "workflow-facilitation": {
+    "label": "Workflow Facilitation",
+    "skills": [
+      "brainstorming"
+    ]
+  },
+  "domain-babycare": {
+    "label": "Babycare Domain",
+    "skills": [
+      "babycare-voice-schema"
+    ]
+  },
+  "travel-concierge": {
+    "label": "Travel & Concierge",
+    "skills": [
+      "flyai",
+      "verified-travel-planner",
+      "vertu-overseas-search"
+    ]
+  },
+  "research-writing": {
+    "label": "Research & Writing",
+    "skills": [
+      "hv-analysis",
+      "khazix-writer"
+    ]
+  },
+  "product-pm": {
+    "label": "Product & PM",
+    "skills": [
+      "pm-build-pack-orchestrator",
+      "pm-delivery-breakdown",
+      "pm-delta-spec",
+      "pm-handoff-qa",
+      "pm-interview-screen",
+      "pm-launch-readout",
+      "pm-metrics-acceptance",
+      "pm-normalized-brief",
+      "pm-prd-deep-review",
+      "pm-problem-framing",
+      "pm-prototype-flow",
+      "pm-scope-cut",
+      "pm-state-matrix",
+      "prototype-to-prd-pack"
+    ]
+  },
+  "media-tools": {
+    "label": "Media Tools",
+    "skills": [
+      "screenshot",
+      "speech",
+      "transcribe"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Build Pack Orchestrator"
+  short_description: "Coordinate AI-native PM handoff with Build Pack"
+  default_prompt: "Use $pm-build-pack-orchestrator to turn this raw feature request into a Build Pack v1 for engineering handoff."

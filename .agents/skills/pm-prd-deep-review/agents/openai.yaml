@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM PRD Deep Review"
+  short_description: "Deep-diagnose App PRDs for gaps and risks"
+  default_prompt: "Use $pm-prd-deep-review to audit this App PRD for funnel gaps, missing states, edge cases, and validation holes."

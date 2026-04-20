@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM State Matrix"
+  short_description: "Enumerate happy path, edge states, and failures"
+  default_prompt: "Use $pm-state-matrix to derive a complete state matrix from this prototype and rules."

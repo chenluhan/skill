@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Metrics and Acceptance"
+  short_description: "Define metrics, events, and acceptance coverage"
+  default_prompt: "Use $pm-metrics-acceptance to define metrics, events, and acceptance cases for this feature."

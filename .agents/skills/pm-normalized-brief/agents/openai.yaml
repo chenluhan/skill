@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Normalized Brief"
+  short_description: "Normalize raw demand into a usable PM brief"
+  default_prompt: "Use $pm-normalized-brief to turn this raw request into a structured Normalized Brief."

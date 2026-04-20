@@ -1,0 +1,95 @@
+{
+  "mode": "full",
+  "input_type": "screenshots",
+  "project_name": "AI Concierge Request Flow",
+  "requested_level": "L4",
+  "sources": [
+    {
+      "id": "shot-home",
+      "type": "image",
+      "path": "/absolute/path/home.png",
+      "note": "Home screen"
+    },
+    {
+      "id": "shot-request",
+      "type": "image",
+      "path": "/absolute/path/request.png",
+      "note": "Request composer"
+    }
+  ],
+  "evidence_summary": {
+    "pages": "Two primary screens are visible.",
+    "flows": "Request submission path is partially visible.",
+    "states": "Disabled submit and success states are implied, but error states are not shown.",
+    "rules": "Submission appears to go through concierge confirmation first."
+  },
+  "pages_or_artifacts": [
+    {
+      "name": "Home",
+      "purpose": "Entry point for concierge requests.",
+      "facts": [
+        "Primary CTA opens request composer."
+      ],
+      "entry_points": [
+        "App launch"
+      ],
+      "exit_points": [
+        "Request Composer"
+      ],
+      "sections": [
+        "Greeting",
+        "Primary CTA",
+        "Ongoing service summary"
+      ],
+      "states": [
+        "Default",
+        "Ongoing service exists"
+      ],
+      "exceptions": [
+        "Ongoing service card unavailable"
+      ],
+      "source_refs": [
+        "shot-home"
+      ]
+    }
+  ],
+  "flow_evidence": [
+    {
+      "title": "Submit Request",
+      "participants": [
+        "User",
+        "App",
+        "Server",
+        "Concierge"
+      ],
+      "steps": [
+        { "lane": "User", "label": "Open request composer" },
+        { "lane": "App", "label": "Show form" },
+        { "lane": "User", "label": "Submit request" },
+        { "lane": "Server", "label": "Create service request" },
+        { "lane": "Concierge", "label": "Confirm request" }
+      ]
+    }
+  ],
+  "state_evidence": [
+    "Submit button appears disabled in the empty form state.",
+    "Success state is implied by later service-progress pages."
+  ],
+  "business_rule_evidence": [
+    {
+      "title": "Submission goes through concierge confirmation",
+      "trigger": "User submits request",
+      "condition": "Service request created successfully",
+      "system_behavior": "Request enters a confirmation phase before handling",
+      "user_feedback": "App explains that concierge will confirm the request first",
+      "fallback": "User can contact concierge to clarify details"
+    }
+  ],
+  "missing_materials": [
+    "Error-state screenshot",
+    "Explicit page transition mapping"
+  ],
+  "user_notes": [
+    "Screenshots only. No backend or admin console shown."
+  ]
+}

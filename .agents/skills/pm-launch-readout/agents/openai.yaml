@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Launch Readout"
+  short_description: "Turn launch data into a concrete product readout"
+  default_prompt: "Use $pm-launch-readout to turn this launch data into a concise product readout and next-step recommendation."

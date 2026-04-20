@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Delivery Breakdown"
+  short_description: "Break a handoff into stories, AC, and dependencies"
+  default_prompt: "Use $pm-delivery-breakdown to break this product handoff into Epic, Stories, AC, and dependencies."

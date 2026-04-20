@@ -1,0 +1,38 @@
+{
+  "baseline_ref": "/absolute/path/run-001/output/ai-concierge-request-flow-prd-pack",
+  "change_scope": {
+    "pages": [
+      {
+        "id": "home",
+        "action": "update",
+        "reason": "Hero CTA wording and quick-start grouping changed"
+      }
+    ],
+    "flows": [
+      {
+        "id": "submit-request",
+        "action": "update",
+        "reason": "Home entry path changed"
+      }
+    ],
+    "rules": [
+      {
+        "id": "submission-goes-through-concierge-confirmation",
+        "action": "no_change",
+        "reason": "No policy change was shown"
+      }
+    ],
+    "open_questions": [
+      {
+        "id": "new-home-routing",
+        "action": "added",
+        "reason": "New grouping may affect routing decisions"
+      }
+    ]
+  },
+  "unchanged_artifacts": [
+    "request-composer",
+    "service-progress"
+  ],
+  "merge_recommended": false
+}

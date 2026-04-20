@@ -1,0 +1,269 @@
+{
+  "project_name": "AI Concierge Request Flow",
+  "product_summary": "Convert a premium service prototype into a review-ready PRD pack.",
+  "goal": "Let users submit concierge requests and track fulfillment progress with visible fallback states.",
+  "target_users": [
+    "Premium members requesting concierge help",
+    "Operators handling incoming requests"
+  ],
+  "assumptions": [
+    "The prototype mainly shows the happy path.",
+    "Operator tools are only partially visible."
+  ],
+  "non_goals": [
+    "Payment settlement",
+    "Coupon logic"
+  ],
+  "metrics": [
+    "request_submit_clicked",
+    "request_submit_succeeded",
+    "request_status_viewed"
+  ],
+  "sources": [
+    {
+      "id": "figma-main",
+      "type": "link",
+      "path": "https://example.com/prototype",
+      "note": "Primary prototype source"
+    }
+  ],
+  "screens": [
+    {
+      "name": "Request Composer",
+      "purpose": "Collect trip context and request details before submission.",
+      "visible_sections": [
+        "Header",
+        "Destination selector",
+        "Preference chips",
+        "Free-text brief",
+        "Primary CTA"
+      ],
+      "entry_points": [
+        "Home hero CTA",
+        "Service detail CTA"
+      ],
+      "exit_points": [
+        "Submission success view",
+        "Back to home"
+      ],
+      "user_actions": [
+        "Select destination",
+        "Choose preference tags",
+        "Enter request details",
+        "Tap Submit request"
+      ],
+      "system_feedback": [
+        "Inline validation",
+        "Submitting state",
+        "Success confirmation"
+      ],
+      "states": [
+        "Initial",
+        "Validation error",
+        "Submitting",
+        "Success",
+        "Submission failure"
+      ],
+      "exceptions": [
+        "Required fields missing",
+        "Network timeout"
+      ],
+      "permissions": [
+        "Login required before submission"
+      ],
+      "analytics": [
+        "request_submit_clicked",
+        "request_submit_failed"
+      ],
+      "facts": [
+        "A free-text request field is visible.",
+        "The primary CTA sits at the bottom of the page."
+      ],
+      "inferences": [
+        "The page needs draft-safe validation before submission."
+      ],
+      "wireframe": [
+        "Header",
+        "Destination selector",
+        "Preference chips",
+        "Free-text brief",
+        "Primary CTA"
+      ],
+      "source_refs": [
+        "figma-main"
+      ]
+    },
+    {
+      "name": "Request Status",
+      "purpose": "Show fulfillment progress and next actions after submission.",
+      "visible_sections": [
+        "Header",
+        "Status timeline",
+        "Assigned operator card",
+        "Fallback contact CTA"
+      ],
+      "entry_points": [
+        "Submission success CTA",
+        "History list"
+      ],
+      "exit_points": [
+        "Back to request list",
+        "Open support chat"
+      ],
+      "user_actions": [
+        "Open request detail",
+        "Contact operator",
+        "Contact fallback support"
+      ],
+      "system_feedback": [
+        "Status updates",
+        "Operator assignment state"
+      ],
+      "states": [
+        "Submitted",
+        "Operator assigned",
+        "In progress",
+        "Blocked",
+        "Completed"
+      ],
+      "exceptions": [
+        "No operator assigned yet",
+        "Service unavailable"
+      ],
+      "permissions": [
+        "Only the submitting user can view request details"
+      ],
+      "analytics": [
+        "request_status_viewed",
+        "request_fallback_contact_clicked"
+      ],
+      "facts": [
+        "A timeline-style status module is visible.",
+        "A fallback contact entry is visible."
+      ],
+      "inferences": [
+        "The status page needs a waiting state before operator pickup."
+      ],
+      "source_refs": [
+        "figma-main"
+      ]
+    }
+  ],
+  "swimlanes": [
+    {
+      "title": "Submit Concierge Request",
+      "purpose": "Show request submission, AI enrichment, and operator handoff.",
+      "participants": [
+        "User",
+        "App",
+        "Server",
+        "Operator",
+        "AI"
+      ],
+      "steps": [
+        {
+          "lane": "User",
+          "label": "Open request composer"
+        },
+        {
+          "lane": "App",
+          "label": "Show request form"
+        },
+        {
+          "lane": "User",
+          "label": "Submit request"
+        },
+        {
+          "lane": "App",
+          "label": "Validate and send request"
+        },
+        {
+          "lane": "Server",
+          "label": "Create request record"
+        },
+        {
+          "lane": "AI",
+          "label": "Classify request and propose tags"
+        },
+        {
+          "lane": "Operator",
+          "label": "Pick up request"
+        }
+      ],
+      "known_gaps": [
+        "Operator SLA is not visible in the prototype."
+      ]
+    }
+  ],
+  "sequence_diagrams": [
+    {
+      "title": "Request Submission Sequence",
+      "purpose": "Show validation, async processing, and timeout handling.",
+      "participants": [
+        "User",
+        "App",
+        "Server",
+        "AI"
+      ],
+      "messages": [
+        {
+          "from": "User",
+          "to": "App",
+          "label": "Tap Submit request",
+          "type": "request"
+        },
+        {
+          "from": "App",
+          "to": "Server",
+          "label": "POST /requests",
+          "type": "request"
+        },
+        {
+          "from": "Server",
+          "to": "AI",
+          "label": "Enrich request",
+          "type": "async"
+        },
+        {
+          "from": "Server",
+          "to": "App",
+          "label": "202 Accepted",
+          "type": "response"
+        },
+        {
+          "from": "App",
+          "to": "User",
+          "label": "Show submitting state",
+          "type": "response"
+        }
+      ],
+      "known_gaps": [
+        "Retry budget is not visible in the prototype."
+      ]
+    }
+  ],
+  "business_rules": [
+    {
+      "title": "Login required before request submission",
+      "trigger": "User taps Submit without an active session.",
+      "condition": "Session token missing or expired.",
+      "system_behavior": "Block submission and redirect to login.",
+      "user_feedback": "Explain that login is required before submitting.",
+      "fallback": "Preserve the draft after login.",
+      "source_type": "stable_inference",
+      "source_refs": [
+        "figma-main"
+      ]
+    }
+  ],
+  "pending_questions": [
+    {
+      "title": "Operator pickup SLA",
+      "related_to": "submit-concierge-request",
+      "question": "How fast should the operator pick up a submitted request?",
+      "impact": "Affects waiting-state copy, fallback timing, and escalation rules.",
+      "owner": "PM",
+      "default_assumption": "No committed SLA in v1. Show async waiting state with fallback contact."
+    }
+  ]
+}
