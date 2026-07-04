@@ -2,9 +2,9 @@
 
 ## Summary
 
-- Total tracked skills: 29
-- Local Codex/Agent sources detected: 29
-- Mirrored into repo: 29
+- Total tracked skills: 30
+- Local Codex/Agent sources detected: 30
+- Mirrored into repo: 30
 - Excluded from mirror: `.system`
 
 ## Design & UI
@@ -43,6 +43,7 @@
 | --- | --- | --- | --- | --- |
 | `hv-analysis` | `codex-local` | `mirrored` | `.agents/skills/hv-analysis` | 横纵分析法（Horizontal-Vertical Analysis）深度研究Skill。融合了索绪尔的历时-共时分析、社会科学的纵向-横截面研究设计、商学院案例研究法与竞争战略分析的核心思想。 当用户想要系统性研究一个产品、公司、概念、技术或人物时使用。核心是双轴分析：纵轴追踪从诞生到当下的完整生命历程（以叙事故事呈现），横轴在当下时间截面上与竞品/同类进行系统性横向对比，最后交叉两条轴产出独到洞察。最终产出一份排版精美的PDF研究报告。 触发词包括但不限于：横纵分析、研究一下、帮我分析、深度研究、做个研究、调研一下、竞品分析、帮我看看这个东西怎么样、这个产品/公司/概念是怎么回事、帮我摸清楚、帮我搞懂、帮我做个deep research。 即使用户只是说"帮我了解一下XX"或"XX是什么来头"，只要上下文暗示需要系统性的深度研究（而非简单的概念解释），都应该触发。也适用于用户丢来一个产品名、公司名、技术名词说"帮我研究一下这个"的场景。 不要用于简单的名词解释（用户只是问"XX是什么"）、不要用于公众号写作、不要用于纯标题摘要生成（用wechat-title）。 |
 | `khazix-writer` | `codex-local` | `mirrored` | `.agents/skills/khazix-writer` | 数字生命卡兹克（Khazix）的公众号长文写作skill。当用户需要撰写公众号文章、写稿子、续写文章、根据素材产出长文时使用。触发词包括但不限于：写文章、写稿子、帮我写、续写、扩写、公众号文章、长文、出稿、按我的风格写。即使用户只是说"帮我把这个写成文章"或"用我的风格写一下"，只要上下文涉及内容创作和公众号输出，都应该触发。也适用于用户丢过来一个PDF、brief、新闻链接、语音转文字或任何素材说"帮我写篇文章"的场景。不要用于短内容（小红书帖子、推特、朋友圈）或纯标题摘要生成（那个用wechat-title skill）。 |
+| `ni-haixia-perspective` | `codex-local` | `mirrored` | `.agents/skills/ni-haixia-perspective` | 倪海厦视角的思维框架。基于佛州官方执照记录、汉唐旧站/诊所页面、课程版权声明、访谈转写与安全审查资料，提炼5个心智模型、8条决策启发式和表达DNA。用途：用倪海厦式“先看症状与系统反馈，再找根因”的视角分析问题。触发：倪海厦、倪师、用倪海厦视角、倪海厦会怎么看、Ni Hai-Xia perspective。不要在一般医疗问题上自动触发；本Skill不做诊断、处方、剂量、停药或替代就医建议。 |
 
 ## Product & PM
 
@@ -70,4 +71,3 @@
 | `screenshot` | `codex-local` | `mirrored` | `.agents/skills/screenshot` | Use when the user explicitly asks for a desktop or system screenshot (full screen, specific app or window, or a pixel region), or when tool-specific capture capabilities are unavailable and an OS-level capture is needed. |
 | `speech` | `codex-local` | `mirrored` | `.agents/skills/speech` | Use when the user asks for text-to-speech narration or voiceover, accessibility reads, audio prompts, or batch speech generation via the OpenAI Audio API; run the bundled CLI (`scripts/text_to_speech.py`) with built-in voices and require `OPENAI_API_KEY` for live calls. Custom voice creation is out of scope. |
 | `transcribe` | `codex-local` | `mirrored` | `.agents/skills/transcribe` | Transcribe audio files to text with optional diarization and known-speaker hints. Use when a user asks to transcribe speech from audio/video, extract text from recordings, or label speakers in interviews or meetings. |
-
