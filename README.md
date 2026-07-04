@@ -6,6 +6,7 @@ Distribution repository for local Codex skills, agent prompts, design specs, and
 
 - `.agents/skills/`: mirrored repo copy of local skills for cross-client distribution
 - `.claude/skills/`: generated Claude Code compatibility symlinks to `.agents/skills/`
+- `<skill-name>/`: promoted single-skill directory for direct GitHub tree URLs when a skill needs to be shared independently
 - `catalog/`: skill taxonomy and generated inventory
 - `agents/`: future agent source and prompt assets
 - `docs/superpowers/specs/`: design docs
@@ -23,6 +24,7 @@ Distribution repository for local Codex skills, agent prompts, design specs, and
 
 - If a client supports the open Agent Skills layout, read from `.agents/skills/`
 - If a client follows Claude Code project conventions, use `.claude/skills/`
+- If you only need one promoted skill, use its root directory URL, for example `https://github.com/chenluhan/skill/tree/main/ni-haixia-perspective`
 - Do not edit `.claude/skills/` directly; it is generated from `.agents/skills/`
 
 ## Git

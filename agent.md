@@ -9,12 +9,13 @@
 ## 目录规则
 - `.agents/skills/<skill-name>/`：本地 skill 镜像后的 repo 副本，是对外分发入口。
 - `.claude/skills/<skill-name>`：指向 `.agents/skills/<skill-name>/` 的兼容入口；由脚本生成，不直接编辑。
+- `<skill-name>/`：少量需要单独分享/安装的 promoted skill 根目录副本，用于提供直观的 GitHub tree URL。内容必须与 `.agents/skills/<skill-name>/` 保持一致。
 - `catalog/`：skill 分类规则与清单索引。
 - `agents/<agent-name>/`：后续 agent 的提示词、配置、说明与辅助资源。
 - `docs/superpowers/specs/`：设计文档与规格说明。
 - `notes/`：临时分析、运行产物、调试输出；默认不纳入版本控制，可随任务结束清理。
 - `scripts/`：仓库维护脚本，例如 git 自动提交脚本。
-- 根目录只保留 `agent.md`、`.gitignore` 与少量必须人工快速查看的仓库文件。
+- 根目录只保留 `agent.md`、`.gitignore`、少量必须人工快速查看的仓库文件，以及明确 promoted 的单 skill 目录。
 
 ## 命名规则
 - skill 与 agent 名称使用小写加中划线，例如 `pm-prd-deep-review`。
@@ -24,7 +25,7 @@
 ## 工作流程
 - 先定规则，再动结构；规则变化先改本文档，再改目录与脚本。
 - 新增或修改 skill 时，优先继续在当前本地运行目录中完成；再由同步脚本镜像进仓库。
-- 仓库中的 `.agents/skills/`、`.claude/skills/` 与 `catalog/skills-index.md` 都由同步脚本维护。
+- 仓库中的 `.agents/skills/`、`.claude/skills/` 与 `catalog/skills-index.md` 都由同步脚本维护；promoted 根目录 skill 需要在同步后人工或脚本保持同名目录一致。
 - 自动同步只允许提交 skill 分发相关路径，不得顺带提交仓库里的其他改动。
 - 正式 agent 内容放进 `agents/`；设计与脚本分别放进 `docs/`、`scripts/`；临时产物留在 `notes/`。
 - 如果未来要切换到 repo-first 工作流，先更新本文档，再把本地运行目录替换成指向 repo 的软链接。
